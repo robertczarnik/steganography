@@ -8,25 +8,40 @@ import java.nio.file.Paths;
 
 public class Steganography {
 
+    private static int getMask(int bitsPerPixel, boolean reversed){
+        int mask;
+        switch (bitsPerPixel){
+            case 8:
+                mask=255;
+                break;
+            case 4:
+                mask=15;
+                break;
+
+            case 2:
+                mask=3;
+                break;
+
+            case 1:default:
+                mask=1;
+                break;
+        }
+
+        if(reversed){
+            return 255-mask;
+        }
+
+        return mask;
+    }
+
     public static void encode(String baseImagePath, String secretFilePath, String resultImagePath,int bitsPerPixel) throws IOException {
+
         BufferedImage image = ImageIO.read(new File(baseImagePath));
         byte[] bFile = Files.readAllBytes(Paths.get(secretFilePath));
         byte[] newBits = new byte[3];
         int pixel,red,green,blue,bytesIterator=0,offset=8-bitsPerPixel,mask;
 
-        switch (bitsPerPixel){ //getting mask to work on bits
-            case 4:
-                mask=240;
-                break;
-
-            case 2:
-                mask=252;
-                break;
-
-            case 1:default:
-                mask=254;
-                break;
-        }
+        mask = getMask(bitsPerPixel,true); //get mask to work on bits
 
         boolean endOfSecretNote = false;
 
@@ -46,16 +61,24 @@ public class Steganography {
                             offset = 8-bitsPerPixel;
                         }
 
+
+
                         newBits[x] = (byte) ( (bFile[bytesIterator] >> offset) & (~mask));
+
+                        //System.out.println(bFile[bytesIterator] + " : " + newBits[x]);
+                        System.out.print((newBits[x] & 0xff) + " ");
                         offset-=bitsPerPixel;
+                        //System.out.println(offset);
                     }
                 }
 
                 pixel = image.getRGB(i,j);
-                //setting proper bits
-                blue = (pixel & mask) | newBits[0];
-                green = ((pixel>>8) & mask) | newBits[1];
-                red = ((pixel>>16) & mask) | newBits[2];
+
+                //set proper bits
+                blue = (pixel & mask) | (newBits[0]& 0xff); //0xff byte vaule as if it was unsigned 0-255
+                green = ((pixel>>8) & mask) | (newBits[1]& 0xff);
+                red = ((pixel>>16) & mask) | (newBits[2]& 0xff);
+
                 //convert rgb values to int
                 int rgb = red;
                 rgb = (rgb << 8) + green;
@@ -68,6 +91,10 @@ public class Steganography {
         ImageIO.write(image, "png", outputfile);
     }
 
+    private static void setOnePixel (){
+
+    }
+
     public static void decode(String baseImagePath, String resultFilePath,int bitsPerPixel) throws IOException {
         BufferedImage image = ImageIO.read(new File(baseImagePath));
         int pixel,mask,color;
@@ -76,19 +103,7 @@ public class Steganography {
         int byteLimit=0,pos=0;
 
 
-        switch (bitsPerPixel){ //getting mask that represents amount of bits under which is encoded information
-            case 4:
-                mask=15;
-                break;
-
-            case 2:
-                mask=3;
-                break;
-
-            case 1:default:
-                mask=1;
-                break;
-        }
+        mask = getMask(bitsPerPixel,false); //getting mask that represents amount of bits under which is encoded information
 
         //reading all pixels from an image
         for(int i=0;i<image.getWidth();i++){
@@ -113,5 +128,4 @@ public class Steganography {
         Path path = Paths.get(resultFilePath);
         Files.write(path, bFile); // saving a file
     }
-
 }
