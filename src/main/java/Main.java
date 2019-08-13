@@ -1,12 +1,16 @@
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
+// sprawdzenie co sie stanie jak bedzie za duzy plik do zaszyforwania
+// zabepieczyc to ^^
+// zrobic statyczna metode ktora probuje rozszyfrowac plik na wszystkie znane sposoby
+// sprawdzic co da sie zakodowac[png,jpg,txt,mp4,itp] i jak mozna zapisac [png,jpg]
+// dodac mozliwosc zakodowania tylko 2 bitow na jednym pikselu - wikipedia -> interfejs metoda setOnePixel i potem dwieklasy to implemetnuja
+// i w klasie Steganography moge sobie wybrac ktoras z tych implementacji do uzycia
+// stego z kluczem prywatnym?
+
 
 public class Main{
     public static void main(String [] args) throws IOException {
-        Steganography.encode("D:\\@wakacjeNaJavie\\steganography\\kot.jpg","D:\\@wakacjeNaJavie\\steganography\\jezozwierz.png","D:\\@wakacjeNaJavie\\steganography\\kotekOut.png",2);
-        Steganography.decode("D:\\@wakacjeNaJavie\\steganography\\kotekOut.png","D:\\@wakacjeNaJavie\\steganography\\odszyfrowane.png",2);
-        //byte[] bFile = Files.readAllBytes(Paths.get("kotOdszyfrowany.png"));
-        //System.out.println("0-owy bajt: "+ bFile[0]);
+
     }
 }
