@@ -31,23 +31,26 @@ public class SteganographyTest {
     @Parameterized.Parameters
     public static Collection encodeOptions() { // all possible combinations
         return Arrays.asList(new Object[][] {
-                { 1, 1, "kot.jpg", "jezozwierz.png", ".png"},
-                { 2, 1, "kot.jpg", "jezozwierz.png", ".png"},
-                { 4, 1, "kot.jpg", "jezozwierz.png", ".jpg"},
-                { 8, 1, "kot.jpg", "jezozwierz.png", ".png"}
+                { 1, 5, "kot.jpg", "jezozwierz.png", ".png"},
+                { 2, 5, "kot.jpg", "jezozwierz.png", ".png"},
+                { 4, 5, "kot.jpg", "jezozwierz.png", ".jpg"},
+                { 8, 4, "kot.jpg", "jezozwierz.png", ".png"}
         });
     }
 
     @Test
     public void givenImagesWhenEncodedThenShouldBeTheSameAsControlVersions() throws IOException {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+
+        //get paths
         String baseImg = classLoader.getResource(base).getPath().substring(1);
         String secretImg = classLoader.getResource(secret).getPath().substring(1);
         String encodedImg = classLoader.getResource("encodedOutput" + suffix).getPath().substring(1);
         String decodedImg = classLoader.getResource("decodedOutput" + suffix).getPath().substring(1);
 
-        Steganography.encode(baseImg,secretImg,encodedImg,bitsPetPixel);
-        Steganography.decode(encodedImg,decodedImg,bitsPetPixel);
+
+        Steganography.encode(baseImg,secretImg,encodedImg,bitsPetPixel,encodeType);
+        Steganography.decode(encodedImg,decodedImg,bitsPetPixel,encodeType);
 
         // take buffer data from botm image files //
         BufferedImage encodedImage= ImageIO.read(new File(decodedImg));
